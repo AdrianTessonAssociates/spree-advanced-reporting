@@ -27,12 +27,12 @@
 
     function drawStateMap() {
     	var state_data = new google.visualization.DataTable();
-    	state_data.addRows(51);
+    	state_data.addRows(300);
     	state_data.addColumn('string', 'State');
     	state_data.addColumn('number', 'Revenue');
-    	<% @data[:state].each do |p| %>
-    	state_data.setValue(0, 0, "<%= p.data["State"] %>");
-    	state_data.setValue(0, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+    	<% @data[:state].each_with_index do |p, i| %>
+    	state_data.setValue(<%= i.to_s %>, 0, "<%= p.data["State"] %>");
+    	state_data.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
     	<% end -%>
 
     	var state_options = {};
@@ -50,9 +50,9 @@
     	country_data.addRows(250);
     	country_data.addColumn('string', 'Country');
     	country_data.addColumn('number', 'Revenue');
-    	<% @data[:country].each do |p| %>
-    	country_data.setValue(0, 0, "<%= p.data["Country"] %>");
-    	country_data.setValue(0, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+    	<% @data[:country].each_with_index do |p, i| %>
+    	country_data.setValue(<%= i.to_s %>, 0, "<%= p.data["Country"] %>");
+    	country_data.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
     	<% end -%>
 
     	var country_options = {};
