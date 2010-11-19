@@ -3,7 +3,7 @@
 <% end -%>
 
 <h1><%= @report_name %></h1>
-
+    
 <table width="100%" cellpadding="0" cellspacing="0" class="show_data">
   <tr>
     <td width="50%" class="selected" id="state">States</td>
@@ -14,12 +14,54 @@
 <% [:state, :country].each do |type| -%>
 <div id="<%= type.to_s %>_data" <%= 'style="display:none;"' if type != :state %> class="advanced_reporting_data">
   <%= @data[type].to_html %>
-
-  <div class="map" style="display: block; background: url('<%= @geomaps[type][:image] %>') repeat scroll 0% 0% transparent; position: relative; padding: 0px; width: <%= @geomaps[type][:width] %>px; height: <%= @geomaps[type][:height] %>px;"><canvas width="<%= @geomaps[type][:width] %>" height="<%= @geomaps[type][:height] %>" style="width: <%= @geomaps[type][:width] %>px; height: <%= @geomaps[type][:height] %>px; position: absolute; left: 0px; top: 0px; padding: 0px; border: 0px none; opacity: 1;"></canvas><img style="opacity: 0; position: absolute; left: 0px; top: 0px; padding: 0px; border: 0px none;" class="map maphilighted" src="<%= @geomaps[type][:image] %>" usemap="#<%= @geomaps[type][:permalink] %>" width="<%= @geomaps[type][:width] %>" height="<%= @geomaps[type][:height] %>"></div>
-  <map name="<%= @geomaps[type][:permalink] %>">
-    <% @geomaps[type].geomap_points.each do |p| -%>
-    <area href="#" <%= @map_data[type][p[:location]] && @map_data[type][p[:location]][:opacity] ? 'class="' + @map_data[type][p[:location]][:opacity] + '" ' : '' %> title="<%= p[:location] %>" shape="<%= p[:shape] %>" coords="<%= p[:coordinates] %>" />
-    <% end -%>
-  </map>
+  <div id="<%= type.to_s %>_canvas"></div>
 </div>
+<% end -%>
+
+<% content_for :head do -%>
+<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+  <script type='text/javascript'>
+    google.load('visualization', '1', {'packages': ['geomap']});
+    google.setOnLoadCallback(drawStateMap);
+    google.setOnLoadCallback(drawCountryMap);
+
+    function drawStateMap() {
+    	var state_data = new google.visualization.DataTable();
+    	state_data.addRows(51);
+    	state_data.addColumn('string', 'State');
+    	state_data.addColumn('number', 'Revenue');
+    	<% @data[:state].each do |p| %>
+    	state_data.setValue(0, 0, "<%= p.data["State"] %>");
+    	state_data.setValue(0, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+    	<% end -%>
+
+    	var state_options = {};
+    	state_options['region'] = 'US';
+	state_options['width'] = '800px';
+	state_options['height'] = '500px';
+    	//state_options['colors'] = [0xFF8747, 0xFFB581, 0xc06000];
+
+    	var state_container = document.getElementById('state_canvas');
+    	var state_geomap = new google.visualization.GeoMap(state_container);
+    	state_geomap.draw(state_data, state_options);
+    };
+    function drawCountryMap() {
+    	var country_data = new google.visualization.DataTable();
+    	country_data.addRows(250);
+    	country_data.addColumn('string', 'Country');
+    	country_data.addColumn('number', 'Revenue');
+    	<% @data[:country].each do |p| %>
+    	country_data.setValue(0, 0, "<%= p.data["Country"] %>");
+    	country_data.setValue(0, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+    	<% end -%>
+
+    	var country_options = {};
+	country_options['width'] = '800px';
+	country_options['height'] = '500px';
+
+    	var country_container = document.getElementById('country_canvas');
+    	var country_geomap = new google.visualization.GeoMap(country_container);
+    	country_geomap.draw(country_data, country_options);
+    };
+</script>
 <% end -%>

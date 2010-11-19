@@ -270,8 +270,7 @@ module AdvancedReporting::ReportsController
         results[:state][order.bill_address.state_id] ||= {
           :name => order.bill_address.state.name,
           :revenue => 0,
-          :units => 0,
-          :abbr => order.bill_address.state.abbr
+          :units => 0
         }
         results[:state][order.bill_address.state_id][:revenue] += rev
         results[:state][order.bill_address.state_id][:units] += units
@@ -280,8 +279,7 @@ module AdvancedReporting::ReportsController
         results[:country][order.bill_address.country_id] ||= {
           :name => order.bill_address.country.name,
           :revenue => 0,
-          :units => 0,
-          :iso => order.bill_address.country.iso
+          :units => 0
         }
         results[:country][order.bill_address.country_id][:revenue] += rev
         results[:country][order.bill_address.country_id][:units] += units
@@ -298,21 +296,5 @@ module AdvancedReporting::ReportsController
       @data[type].rename_column("location", type.to_s.capitalize)
       @data[type].replace_column("Revenue") { |r| "$%0.2f" % r.Revenue }
     end
-
-    @map_data = {}
-    max = {}
-    [:state, :country].each do |type|
-      max[type] = results[type].inject({}) { |h, (k, v)| h[k] = v[:revenue]; h }.values.max
-      if max[type] > 0
-        key = type == :state ? :abbr : :iso
-        @map_data[type] = results[type].inject({}) { |h, (k, v)| h[v[key]] = { :opacity => opacity(v[:revenue], max[type]), :value => v[:revenue] }; h }
-      end
-    end
-
-    @geomaps = { :state => Geomap.find_by_permalink('usa'), :country => Geomap.find_by_permalink('world') }
-  end
-
-  def opacity(value, max)
-    "%02.f" % (value.to_f/(1.5*max)*100).to_i
   end
 end
