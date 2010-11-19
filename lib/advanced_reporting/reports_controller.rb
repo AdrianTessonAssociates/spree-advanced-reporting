@@ -72,29 +72,27 @@ module AdvancedReporting::ReportsController
   end
 
   def report_increment_setup
-    @flot_data = {}
     @data = {}
     [:daily, :weekly, :monthly].each do |type|
       @data[type] = Table(%w[key display value])
-      @flot_data[type] = Table(%w[timestamp value])
     end
 
     @dates = {
       :daily => {
         :date_hash => "%F",
         :date_display => "%m-%d-%Y",
-        :header_display => 'Day',
+        :header_display => 'Daily',
         :timestamp => "%Y-%m-%d"
       },
       :weekly => {
         :date_hash => "%U",
         :date_display => "%F",
-        :header_display => 'Week'
+        :header_display => 'Weekly'
       },
       :monthly => {
         :date_hash => "%Y-%m",
         :date_display => "%B %Y",
-        :header_display => 'Month',
+        :header_display => 'Monthly',
         :timestamp => "%Y-%m-01"
       }
     }
@@ -129,7 +127,6 @@ module AdvancedReporting::ReportsController
     [:daily, :weekly, :monthly].each do |type|
       results[type].each do |k,v|
         @data[type] << { "key" => k, "display" => v[:display], "value" => v[:value] } 
-        @flot_data[type] << { "timestamp" => v[:timestamp], "value" => v[:value] }
       end
       @data[type].sort_rows_by!(["key"])
       @data[type].remove_column("key")
@@ -180,7 +177,6 @@ module AdvancedReporting::ReportsController
     [:daily, :weekly, :monthly].each do |type|
       results[type].each do |k,v|
         @data[type] << { "key" => k, "display" => v[:display], "value" => v[:value] } 
-        @flot_data[type] << { "timestamp" => v[:timestamp], "value" => v[:value] }
       end
       @data[type].sort_rows_by!(["key"])
       @data[type].remove_column("key")

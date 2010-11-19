@@ -7,10 +7,13 @@ $(function() {
 		$(id).show();
 	});
 	$('table.tablesorter').tablesorter();
-
-	$(['daily', 'weekly', 'monthly']).each(function(i, f) {
-		if($('div#flotter_' + f).length > 0) {
-			$.plot($('#flotter_' + f), flot_data['weekly']);
-		}
+	$('table.tablesorter').bind("sortEnd", function() {
+		var section = $(this).parent().attr('id');
+		var even = true;
+		$.each($('div#' + section + ' table tr'), function(i, j) {
+			$(j).removeClass('even').removeClass('odd');
+			$(j).addClass(even ? 'even' : 'odd');
+			even = !even;
+		});
 	});
 })
