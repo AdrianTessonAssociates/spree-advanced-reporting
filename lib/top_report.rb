@@ -1,0 +1,2 @@
+class TopReport < AdvancedReport
+end

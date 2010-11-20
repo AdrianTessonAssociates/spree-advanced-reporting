@@ -3,7 +3,8 @@
 <% end -%>
 
 <h1><%= @report_name %></h1>
-    
+
+<div id="map_canvas"></div>    
 <table width="100%" cellpadding="0" cellspacing="0" class="show_data">
   <tr>
     <td width="50%" class="selected" id="state">States</td>
@@ -13,53 +14,35 @@
 
 <% [:state, :country].each do |type| -%>
 <div id="<%= type.to_s %>_data" <%= 'style="display:none;"' if type != :state %> class="advanced_reporting_data">
-  <%= @data[type].to_html %>
+  <%= @report.ruportdata[type].to_html %>
   <div id="<%= type.to_s %>_canvas"></div>
 </div>
 <% end -%>
 
 <% content_for :head do -%>
-  <script type='text/javascript'>
-    google.setOnLoadCallback(drawStateMap);
-    google.setOnLoadCallback(drawCountryMap);
+<script type='text/javascript'>
+    google.setOnLoadCallback(drawMaps);
 
-    function drawStateMap() {
-    	var state_data = new google.visualization.DataTable();
-    	state_data.addRows(300);
-    	state_data.addColumn('string', 'State');
-    	state_data.addColumn('number', 'Revenue');
-    	<% @data[:state].each_with_index do |p, i| %>
-    	state_data.setValue(<%= i.to_s %>, 0, "<%= p.data["State"] %>");
-    	state_data.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+    function drawMaps() {
+	<% [:state, :country].each do |type| -%>
+    	var data_<%= type.to_s %> = new google.visualization.DataTable();
+    	data_<%= type.to_s %>.addRows(<%= @report.ruportdata[type].size %>);
+    	data_<%= type.to_s %>.addColumn('string', '<%= type.to_s.capitalize %>');
+    	data_<%= type.to_s %>.addColumn('number', 'Revenue');
+    	<% @report.ruportdata[type].each_with_index do |p, i| %>
+    	data_<%= type.to_s %>.setValue(<%= i.to_s %>, 0, "<%= p.data[type.to_s.capitalize] %>");
+    	data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
     	<% end -%>
 
-    	var state_options = {};
-    	state_options['region'] = 'US';
-	state_options['width'] = '800px';
-	state_options['height'] = '500px';
-    	//state_options['colors'] = [0xFF8747, 0xFFB581, 0xc06000];
+    	var options_<%= type.to_s %> = { 'width' : '800px', 'height' : '500px' };
+        <% if type == :state %> 
+    	options_<%= type.to_s %>['region'] = 'US';
+        <% end -%>
 
-    	var state_container = document.getElementById('state_canvas');
-    	var state_geomap = new google.visualization.GeoMap(state_container);
-    	state_geomap.draw(state_data, state_options);
-    };
-    function drawCountryMap() {
-    	var country_data = new google.visualization.DataTable();
-    	country_data.addRows(250);
-    	country_data.addColumn('string', 'Country');
-    	country_data.addColumn('number', 'Revenue');
-    	<% @data[:country].each_with_index do |p, i| %>
-    	country_data.setValue(<%= i.to_s %>, 0, "<%= p.data["Country"] %>");
-    	country_data.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
-    	<% end -%>
-
-    	var country_options = {};
-	country_options['width'] = '800px';
-	country_options['height'] = '500px';
-
-    	var country_container = document.getElementById('country_canvas');
-    	var country_geomap = new google.visualization.GeoMap(country_container);
-    	country_geomap.draw(country_data, country_options);
+    	var <%= type.to_s %>_container = document.getElementById('<%= type.to_s %>_canvas');
+    	var <%= type.to_s %>_geomap = new google.visualization.GeoMap(<%= type.to_s %>_container);
+    	<%= type.to_s %>_geomap.draw(data_<%= type.to_s %>, options_<%= type.to_s %>);
+        <% end -%>
     };
 </script>
 <% end -%>
