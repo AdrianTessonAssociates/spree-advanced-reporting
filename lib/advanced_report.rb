@@ -1,7 +1,8 @@
 class AdvancedReport
-  attr_accessor :orders, :product_text, :date_text, :ruportdata, :data
+  attr_accessor :orders, :product_text, :date_text, :ruportdata, :data, :params
 
   def initialize(params)
+    self.params = params
     self.data = {}
     self.ruportdata = {}
     search = Order.searchlogic(params[:search])
@@ -26,5 +27,19 @@ class AdvancedReport
     else
       self.date_text += " All"
     end
+  end
+
+  def download_url(base, format, report_type = nil)
+    elements = []
+    params[:advanced_reporting] ||= {}
+    params[:advanced_reporting]["report_type"] = report_type if report_type
+    if params
+      [:search, :advanced_reporting].each do |type|
+        if params[type]
+          params[type].each { |k, v| elements << "#{type}[#{k}]=#{v}" }
+        end
+      end
+    end
+    base + '.' + format + '?' + elements.join('&')
   end
 end

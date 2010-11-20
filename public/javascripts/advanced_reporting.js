@@ -16,4 +16,16 @@ $(function() {
 			even = !even;
 		});
 	});
+	$('a#display_sidebar').click(function() {
+		$(this).hide();
+		$('div#inner_sidebar').animate({ opacity: 1.0 });
+		$('a#hide_sidebar').show();	
+		return false;
+	});
+	$('a#hide_sidebar').click(function() {
+		$(this).hide();
+		$('div#inner_sidebar').animate({ opacity: 0 });
+		$('a#display_sidebar').show();	
+		return false;
+	});
 })

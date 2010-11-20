@@ -1,5 +1,7 @@
+<table width="300px"><tr><td width="240">
+<div id="inner_sidebar">
 <% form_for :search do |s| %>
-    <h3>Reporting Criteria</h3>
+    <h3>Advanced Reports</h3>
     <label><%= t("date_range") %></label><br />
     <div class="yui-g date-range-filter">
       <div class="yui-u sub-field first">
@@ -13,11 +15,11 @@
     </div>
 
     <% if @stores -%>
-    Stores:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br />
+    Store:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br />
     <% end -%>
 
     <% if params[:action] != 'top_products' %>
-    Products:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
+    Product:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
     <% end -%>
 
     <p><%= button t("submit") %></p>
@@ -26,8 +28,8 @@
 <table>
   <thead>
     <tr>
-      <th><%= t("name") %></th>
-      <th><%= t("description") %></th>
+      <td><%= t("name") %></td>
+      <td><%= t("description") %></td>
     </tr>
   </thead>
   <tbody>
@@ -39,6 +41,11 @@
     <% end %>
   </tbody>
 </table>
+</div>
+</td><td>
+<a href="#" id="display_sidebar"><img src="/images/advanced_reporting/green_arrow_down.png" /></a>
+<a href="#" id="hide_sidebar"><img src="/images/advanced_reporting/green_arrow_up.png" /></a>
+</td></tr></table>
 
 <% content_for :head do -%>
 <%= javascript_include_tag 'jquery.tablesorter.min.js', 'advanced_reporting.js' %>

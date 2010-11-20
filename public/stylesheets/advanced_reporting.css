@@ -1,3 +1,12 @@
+#content.with-sidebar { background: #FFF; padding-right: 1em; }
+div#sidebar { padding: 0px 10px 0px 0px; }
+div#sidebar td { padding: 0px; }
+div#sidebar h3 { margin: 0px 0px 10px 0px; }
+div#inner_sidebar { margin-top: 10px; opacity: 0; background: #CCDDDD; z-index: 10; padding: 20px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+div#inner_sidebar select { width: 150px; }
+div#sidebar a#display_sidebar img, div#sidebar a#hide_sidebar img { width: 50px; height: 50px; }
+div#sidebar a#hide_sidebar { display: none; }
+
 table.show_data td.selected { background: #999; }
 table.show_data td:hover { cursor: pointer; }
 
