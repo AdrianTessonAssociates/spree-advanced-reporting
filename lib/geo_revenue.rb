@@ -12,7 +12,7 @@ class GeoRevenue < AdvancedReport
       if !self.product.nil? && product_in_taxon
         rev = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity * b.price }
       elsif !self.taxon.nil?
-        rev = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
+        rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
       end
       rev = 0 if !self.product_in_taxon
       if order.bill_address.state

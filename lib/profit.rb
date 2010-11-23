@@ -21,7 +21,7 @@ class Profit < IncrementReport
       if !self.product.nil? && product_in_taxon
         profit = order.line_items.select { |li| li.product == self.product }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
       elsif !self.taxon.nil?
-        profit = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
+        profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
       end
       profit = 0 if !self.product_in_taxon
       INCREMENTS.each { |type| data[type][date[type]][:value] += profit }

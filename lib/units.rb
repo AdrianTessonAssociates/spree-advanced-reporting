@@ -21,7 +21,7 @@ class Units < IncrementReport
       if !self.product.nil? && product_in_taxon
         units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
       elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
+        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
       end
       units = 0 if !self.product_in_taxon
       INCREMENTS.each { |type| data[type][date[type]][:value] += units }

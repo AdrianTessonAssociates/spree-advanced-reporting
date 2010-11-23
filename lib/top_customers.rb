@@ -20,8 +20,8 @@ class TopCustomers < TopReport
           rev = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity * b.price }
           units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
         elsif !self.taxon.nil?
-          rev = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
-          units = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
+          rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
+          units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
         end
         rev = units = 0 if !self.product_in_taxon
         data[order.user.id][:revenue] += rev
