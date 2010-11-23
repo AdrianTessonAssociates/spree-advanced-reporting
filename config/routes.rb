@@ -1,5 +1,6 @@
 map.namespace :admin do |admin|
   admin.resources :reports, :collection => {
+    :sales_total => :get,
     :revenue => :get,
     :units => :get,
     :profit => :get,
