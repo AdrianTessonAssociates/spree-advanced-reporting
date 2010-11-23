@@ -23,10 +23,10 @@
             Store:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br />
           <% end -%>
 
+          <% if params[:action] != 'top_products' %>
           <% if @taxons -%>
             Taxon: <br /><%= collection_select(:advanced_reporting, :taxon_id, @taxons, :id, :name, { :include_blank => 'All' } ) %><br />
           <% end -%>
-          <% if params[:action] != 'top_products' %>
             Product:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
           <% end -%>
           <p><%= button t("submit") %></p>
