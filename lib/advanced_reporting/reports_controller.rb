@@ -75,12 +75,12 @@ module AdvancedReporting::ReportsController
   end
 
   def revenue
-    @report = AdvancedReporting::IncrementReport::Revenue.new(params)
+    @report = AdvancedReport::IncrementReport::Revenue.new(params)
     base_report_render("revenue")
   end
 
   def units
-    @report = AdvancedReporting::IncrementReport::Units.new(params)
+    @report = AdvancedReport::IncrementReport::Units.new(params)
     base_report_render("units")
   end
 
