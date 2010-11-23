@@ -1,4 +1,4 @@
-class Profit < IncrementReport
+class AdvancedReport::IncrementReport::Profit < AdvancedReport::IncrementReport
   def description
     "Total profit in orders, where profit is the sum of item quantity times item price minus item cost price"
   end
@@ -17,13 +17,7 @@ class Profit < IncrementReport
              Time.parse(order.completed_at.strftime(dates[type][:timestamp])).to_i
         }
       end
-      profit = order.line_items.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
-      if !self.product.nil? && product_in_taxon
-        profit = order.line_items.select { |li| li.product == self.product }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
-      elsif !self.taxon.nil?
-        profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
-      end
-      profit = 0 if !self.product_in_taxon
+      profit = profit(order)
       INCREMENTS.each { |type| data[type][date[type]][:value] += profit }
       self.total += profit
     end

@@ -16,4 +16,10 @@ $(function() {
 			even = !even;
 		});
 	});
+	if($('input#product_id').length > 0) {
+		$('select#advanced_reporting_product_id').val($('input#product_id').val());
+	}
+	if($('input#taxon_id').length > 0) {
+		$('select#advanced_reporting_taxon_id').val($('input#taxon_id').val());
+	}
 })

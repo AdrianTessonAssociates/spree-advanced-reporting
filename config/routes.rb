@@ -7,5 +7,6 @@ map.namespace :admin do |admin|
     :top_customers => :get,
     :geo_revenue => :get,
     :geo_units => :get,
+    :geo_profit => :get,
   }
 end

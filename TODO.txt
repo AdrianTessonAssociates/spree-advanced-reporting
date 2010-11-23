@@ -1,5 +1,3 @@
-# Fix report namespace organization
-# Fix sidebar population of values after form submission (dates and advanced_reporting input)
 # Add UI for limiting products / store on frontend
 # Add localization
 

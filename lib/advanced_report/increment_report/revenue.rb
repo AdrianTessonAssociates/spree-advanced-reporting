@@ -1,4 +1,4 @@
-class Revenue < IncrementReport
+class AdvancedReport::IncrementReport::Revenue < AdvancedReport::IncrementReport
   def description
     "Total order revenue, where revenue is the sum of order item prices, excluding shipping and tax"
   end

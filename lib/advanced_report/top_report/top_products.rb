@@ -1,4 +1,4 @@
-class TopProducts < TopReport
+class AdvancedReport::TopReport::TopProducts < AdvancedReport::TopReport
   def description
     "Top selling products, calculated by revenue"
   end

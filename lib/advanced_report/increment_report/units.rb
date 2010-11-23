@@ -1,4 +1,4 @@
-class Units < IncrementReport
+class AdvancedReport::IncrementReport::Units < AdvancedReport::IncrementReport
   def description
     "Total units sold in orders, a sum of the item quantities per order or per item"
   end
@@ -17,13 +17,7 @@ class Units < IncrementReport
              Time.parse(order.completed_at.strftime(dates[type][:timestamp])).to_i
         }
       end
-      units = order.line_items.sum(:quantity)
-      if !self.product.nil? && product_in_taxon
-        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
-      elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
-      end
-      units = 0 if !self.product_in_taxon
+      units = units(order)
       INCREMENTS.each { |type| data[type][date[type]][:value] += units }
       self.total += units
     end

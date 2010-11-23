@@ -15,6 +15,7 @@ module AdvancedReporting::ReportsController
       :top_customers	=> { :name => "Top Customers", :description => "Top Customers" },
       :geo_revenue	=> { :name => "Geo Revenue", :description => "Geo Revenue" },
       :geo_units	=> { :name => "Geo Units", :description => "Geo Units" },
+      :geo_profit	=> { :name => "Geo Profit", :description => "Geo Profit" },
   }
 
   def advanced_reporting_index
@@ -74,36 +75,40 @@ module AdvancedReporting::ReportsController
   end
 
   def revenue
-    @report = Revenue.new(params)
+    @report = AdvancedReporting::IncrementReport::Revenue.new(params)
     base_report_render("revenue")
   end
 
   def units
-    @report = Units.new(params)
+    @report = AdvancedReporting::IncrementReport::Units.new(params)
     base_report_render("units")
   end
 
   def profit
-    @report = Profit.new(params)
+    @report = AdvancedReport::IncrementReport::Profit.new(params)
     base_report_render("profit")
   end
 
   def top_products
-    @report = TopProducts.new(params, 4)
+    @report = AdvancedReport::TopReport::TopProducts.new(params, 4)
     base_report_top_render("top_products")
   end
 
   def top_customers
-    @report = TopCustomers.new(params, 4)
+    @report = AdvancedReport::TopReport::TopCustomers.new(params, 4)
     base_report_top_render("top_customers")
   end
 
   def geo_revenue
-    @report = GeoRevenue.new(params)
+    @report = AdvancedReport::GeoReport::GeoRevenue.new(params)
     render :template => "admin/reports/geo_base"
   end
   def geo_units
-    @report = GeoUnits.new(params)
+    @report = AdvancedReport::GeoReport::GeoUnits.new(params)
+    render :template => "admin/reports/geo_base"
+  end
+  def geo_profit
+    @report = AdvancedReport::GeoReport::GeoProfit.new(params)
     render :template => "admin/reports/geo_base"
   end
 end

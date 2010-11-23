@@ -1,4 +1,4 @@
-class GeoUnits < AdvancedReport
+class AdvancedReport::GeoReport::GeoUnits < AdvancedReport::GeoReport
   def description
     "Unit sales divided geographically, into states and countries"
   end
@@ -8,13 +8,7 @@ class GeoUnits < AdvancedReport
 
     data = { :state => {}, :country => {} }
     orders.each do |order|
-      units = order.line_items.sum(:quantity)
-      if !self.product.nil? && product_in_taxon
-        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
-      elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
-      end
-      units = 0 if !self.product_in_taxon
+      units = units(order)
       if order.bill_address.state
         data[:state][order.bill_address.state_id] ||= {
           :name => order.bill_address.state.name,

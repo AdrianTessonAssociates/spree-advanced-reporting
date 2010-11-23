@@ -1,5 +1,4 @@
-# TODO: Fix namespace later
-class IncrementReport < AdvancedReport
+class AdvancedReport::IncrementReport < AdvancedReport
   INCREMENTS = [:daily, :weekly, :monthly, :yearly]
   attr_accessor :increments, :dates, :total, :all_data
 
@@ -47,7 +46,7 @@ class IncrementReport < AdvancedReport
       ruportdata[inc].sort_rows_by!(["key"])
       ruportdata[inc].remove_column("key")
       ruportdata[inc].rename_column("display", dates[inc][:header_display])
-      ruportdata[inc].rename_column("value", self.class.name)
+      ruportdata[inc].rename_column("value", self.class.name.split('::').last)
     end
     self.all_data.sort_rows_by!(["key"])
     self.all_data.remove_column("key")

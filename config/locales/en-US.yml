@@ -1,9 +1,10 @@
 en-US:
   revenue: "Revenue"
+  profit: "Profit"
+  units: "Units"
   top_products: "Top Products"
   top_customers: "Top Customers"
+  submit: "Submit"
   geo_revenue: "Geo Revenue"
   geo_units: "Geo Units"
-  units: "Units"
-  submit: "Submit"
-  profit: "Profit"
+  geo_profit: "Geo Profit"

@@ -1,4 +1,4 @@
-class GeoRevenue < AdvancedReport
+class AdvancedReport::GeoReport::GeoRevenue < AdvancedReport::GeoReport
   def description
     "Revenue divided geographically, into states and countries"
   end
@@ -8,26 +8,20 @@ class GeoRevenue < AdvancedReport
 
     data = { :state => {}, :country => {} }
     orders.each do |order|
-      rev = order.item_total
-      if !self.product.nil? && product_in_taxon
-        rev = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity * b.price }
-      elsif !self.taxon.nil?
-        rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
-      end
-      rev = 0 if !self.product_in_taxon
+      revenue = revenue(order)
       if order.bill_address.state
         data[:state][order.bill_address.state_id] ||= {
           :name => order.bill_address.state.name,
           :revenue => 0
         }
-        data[:state][order.bill_address.state_id][:revenue] += rev
+        data[:state][order.bill_address.state_id][:revenue] += revenue
       end
       if order.bill_address.country
         data[:country][order.bill_address.country_id] ||= {
           :name => order.bill_address.country.name,
           :revenue => 0
         }
-        data[:country][order.bill_address.country_id][:revenue] += rev
+        data[:country][order.bill_address.country_id][:revenue] += revenue
       end
     end
 
