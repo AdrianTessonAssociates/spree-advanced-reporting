@@ -94,10 +94,10 @@ module AdvancedReporting::ReportsController
 
   def geo_revenue
     @report = GeoRevenue.new(params)
-    render :template => "geo_base"
+    render :template => "admin/reports/geo_base"
   end
   def geo_units
     @report = GeoUnits.new(params)
-    render :template => "geo_base"
+    render :template => "admin/reports/geo_base"
   end
 end
