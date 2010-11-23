@@ -50,8 +50,9 @@
 <% content_for :head do -%>
 <%= javascript_include_tag 'jquery.tablesorter.min.js', 'advanced_reporting.js' %>
 <%= stylesheet_link_tag 'advanced_reporting' %>
-<script type='text/javascript' src='http://www.google.com/jsapi'></script>
-<script type='text/javascript'>
-    google.load('visualization', '1', {'packages': ['geomap', 'corechart']});
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load('visualization', '1', {'packages': ['corechart']});	
+    google.load('visualization', '1', {'packages': ['geomap']});	
 </script>
 <% end -%>
