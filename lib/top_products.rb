@@ -1,4 +1,8 @@
 class TopProducts < TopReport
+  def description
+    "Top selling products, calculated by revenue"
+  end
+
   def initialize(params, limit)
     super(params)
 

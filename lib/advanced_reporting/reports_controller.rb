@@ -1,9 +1,7 @@
 module AdvancedReporting::ReportsController
   def self.included(target)
     target.class_eval do
-      alias :spree_index :index
-      def index; advanced_reporting_index; end
-      before_filter :basic_report_setup, :actions => [:profit, :revenue, :units, :top_products, :top_customers, :geo_revenue]
+      before_filter :basic_report_setup, :actions => [:profit, :revenue, :units, :top_products, :top_customers, :geo_revenue, :geo_units]
     end 
   end
 
@@ -14,25 +12,22 @@ module AdvancedReporting::ReportsController
       :top_products	=> { :name => "Top Products", :description => "Top Products" },
       :top_customers	=> { :name => "Top Customers", :description => "Top Customers" },
       :geo_revenue	=> { :name => "Geo Revenue", :description => "Geo Revenue" },
+      :geo_units	=> { :name => "Geo Units", :description => "Geo Units" },
   }
-
-  def advanced_reporting_index
-    @reports = ADVANCED_REPORTS.merge(Admin::ReportsController::AVAILABLE_REPORTS)
-  end
 
   def basic_report_setup
     @reports = ADVANCED_REPORTS
-    @products = Product.all 
+    @products = Product.all
+    @taxons = Taxon.all
     if defined?(MultiDomainExtension)
       @stores = Store.all
-      # TODO: Add UI for limiting products / store on frontend
     end
     @report_name = params[:action].gsub(/_/, ' ').split(' ').each { |w| w.capitalize! }.join(' ')
   end
 
   def base_report_top_render(filename)
     respond_to do |format|
-      format.html { render :template => "admin/reports/base_top_report" }
+      format.html { render :template => "admin/reports/top_base" }
       format.pdf do
         send_data @report.ruportdata.to_pdf, :type =>"application/pdf", :filename => "#{filename}.pdf"
       end
@@ -47,13 +42,28 @@ module AdvancedReporting::ReportsController
     params[:advanced_reporting]["report_type"] = params[:advanced_reporting]["report_type"].to_sym if params[:advanced_reporting]["report_type"]
     params[:advanced_reporting]["report_type"] ||= :daily
     respond_to do |format|
-      format.html { render :template => "admin/reports/base_report" }
+      format.html { render :template => "admin/reports/increment_base" }
       format.pdf do
-        send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_pdf, :type =>"application/pdf", :filename => filename + ".pdf"
+        if params[:advanced_reporting]["report_type"] == :all
+          send_data @report.all_data.to_pdf, :type =>"application/pdf", :filename => filename + ".pdf"
+        else 
+          send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_pdf, :type =>"application/pdf", :filename => filename + ".pdf"
+        end 
       end
       format.csv do
-        send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_csv, :type =>"application/csv", :filename => filename + ".csv"
+        if params[:advanced_reporting]["report_type"] == :all
+          send_data @report.all_data.to_csv, :type =>"application/csv", :filename => filename + ".csv"
+        else 
+          send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_csv, :type =>"application/csv", :filename => filename + ".csv"
+        end
       end
+      #format.svg do
+      #  if params[:advanced_reporting]["report_type"] == :all
+      #    send_data @report.all_data.to_svg, :type =>"application/svg", :filename => filename + ".svg"
+      #  else 
+      #    send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_svg, :type =>"application/svg", :filename => filename + ".svg"
+      #  end
+      #end
     end
   end
 
@@ -84,5 +94,10 @@ module AdvancedReporting::ReportsController
 
   def geo_revenue
     @report = GeoRevenue.new(params)
+    render :template => "geo_base"
+  end
+  def geo_units
+    @report = GeoUnits.new(params)
+    render :template => "geo_base"
   end
 end

@@ -1,7 +1,12 @@
 class Revenue < IncrementReport
+  def description
+    "Total order revenue, where revenue is the sum of order item prices, excluding shipping and tax"
+  end
+
   def initialize(params)
     super(params)
     self.total = 0
+      
     self.orders.each do |order|
       date = {}
       INCREMENTS.each do |type|
@@ -14,20 +19,18 @@ class Revenue < IncrementReport
         }
       end
       rev = order.item_total
-      if params[:advanced_reporting] && params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
-        rev = order.line_items.select { |li| li.product.id.to_s == params[:advanced_reporting][:product_id] }.inject(0) { |a, b| a += b.quantity * b.price }
+      if !self.product.nil? && product_in_taxon
+        rev = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity * b.price }
+      elsif !self.taxon.nil?
+        rev = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
       end
+      rev = 0 if !self.product_in_taxon
       INCREMENTS.each { |type| data[type][date[type]][:value] += rev }
       self.total += rev
     end
 
-    INCREMENTS.each do |type|
-      data[type].each { |k,v| ruportdata[type] << { "key" => k, "display" => v[:display], "value" => v[:value] } }
-      ruportdata[type].sort_rows_by!(["key"])
-      ruportdata[type].remove_column("key")
-      ruportdata[type].replace_column("value") { |r| "$%0.2f" % r.value }
-      ruportdata[type].rename_column("value", "Revenue")
-      ruportdata[type].rename_column("display", dates[type][:header_display])
-    end
+    generate_ruport_data
+
+    INCREMENTS.each { |type| ruportdata[type].replace_column("Revenue") { |r| "$%0.2f" % r["Revenue"] } }
   end
 end

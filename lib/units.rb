@@ -1,4 +1,8 @@
 class Units < IncrementReport
+  def description
+    "Total units sold in orders, a sum of the item quantities per order or per item"
+  end
+
   def initialize(params)
     super(params)
     self.total = 0
@@ -14,19 +18,16 @@ class Units < IncrementReport
         }
       end
       units = order.line_items.sum(:quantity)
-      if params[:advanced_reporting] && params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
-        units = order.line_items.select { |li| li.product.id.to_s == params[:advanced_reporting][:product_id] }.inject(0) { |a, b| a += b.quantity }
+      if !self.product.nil? && product_in_taxon
+        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
+      elsif !self.taxon.nil?
+        units = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
       end
+      units = 0 if !self.product_in_taxon
       INCREMENTS.each { |type| data[type][date[type]][:value] += units }
       self.total += units
     end
 
-    INCREMENTS.each do |type|
-      data[type].each { |k,v| ruportdata[type] << { "key" => k, "display" => v[:display], "value" => v[:value] } }
-      ruportdata[type].sort_rows_by!(["key"])
-      ruportdata[type].remove_column("key")
-      ruportdata[type].rename_column("value", "Units")
-      ruportdata[type].rename_column("display", dates[type][:header_display])
-    end
+    generate_ruport_data
   end
 end

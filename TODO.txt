@@ -1,0 +1,5 @@
+# Fix report namespace organization
+# Fix sidebar population of values after form submission (dates and advanced_reporting input)
+# Override dashboard?
+# Add SVG formatting? or another plotting tool?
+# Add UI for limiting products / store on frontend

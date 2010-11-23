@@ -3,19 +3,27 @@
 <% end %>
 
 <h1><%= @report_name %></h1>
-
+<%= @report.description %><br />
 <%= @report.product_text %>
+<%= @report.taxon_text %>
 <%= @report.date_text %><br />
 Total: <%= @report.total %>
-<% if false -%>Download Data: <a href="/downloadable">Downloadable</a><% end -%>
+<a href="<%= @report.download_url(request.request_uri, 'pdf', "all") %>">PDF</a> | <a href="<%= @report.download_url(request.request_uri, 'csv', "all") %>">CSV</a>
 
 <table width="100%" cellpadding="0" cellspacing="0" class="show_data">
   <tr>
     <% @report.increments.each do |inc| %>
     <td width="25%" <%= 'class="selected"' if inc == :daily %> id="<%= inc.to_s %>">
-      <%= inc.to_s.capitalize %><br />
-      <a href="<%= @report.download_url(request.request_uri, 'pdf', inc.to_s) %>">Download PDF</a><br />
-      <a href="<%= @report.download_url(request.request_uri, 'csv', inc.to_s) %>">Download CSV</a>
+      <table cellpadding="0" cellspacing="0" style="margin:0px;"><tr>
+      <td><h3><%= inc.to_s.capitalize %></h3></td>
+      <td>
+        <table class="download" style="width:auto;"><tr>
+          <td><img src="/images/advanced_reporting/save.png" alt="Save" /></td>
+          <td class="links">
+            <a href="<%= @report.download_url(request.request_uri, 'pdf', inc.to_s) %>">PDF</a><br />
+            <a href="<%= @report.download_url(request.request_uri, 'csv', inc.to_s) %>">CSV</a>
+          </td></tr></table>
+        </td></tr></table>
     </td>
     <% end -%>
   </tr>  

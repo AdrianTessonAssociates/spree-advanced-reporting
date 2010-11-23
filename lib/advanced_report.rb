@@ -1,5 +1,9 @@
 class AdvancedReport
-  attr_accessor :orders, :product_text, :date_text, :ruportdata, :data, :params
+  attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :data, :params, :taxon, :product, :product_in_taxon
+
+  def description
+    "Base Advanced Report"
+  end
 
   def initialize(params)
     self.params = params
@@ -7,11 +11,28 @@ class AdvancedReport
     self.ruportdata = {}
     search = Order.searchlogic(params[:search])
     search.checkout_complete = true
+    search.state_does_not_equal('canceled')
 
     self.orders = search.find(:all)
-    if params[:advanced_reporting] && params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
-      product = Product.find(params[:advanced_reporting][:product_id])
-      self.product_text = "Product: #{product.name}<br />" if product
+
+    self.product_in_taxon = true
+    if params[:advanced_reporting]
+      if params[:advanced_reporting][:taxon_id] != ''
+        self.taxon = Taxon.find(params[:advanced_reporting][:taxon_id])
+      end
+      if params[:advanced_reporting][:product_id] != ''
+        self.product = Product.find(params[:advanced_reporting][:product_id])
+      end  
+    end
+    if self.taxon && self.product && !self.product.taxons.include?(self.taxon)
+      self.product_in_taxon = false
+    end
+
+    if self.product
+      self.product_text = "Product: #{self.product.name}<br />"
+    end
+    if self.taxon
+      self.taxon_text = "Taxon: #{self.taxon.name}<br />"
     end
     self.date_text = "Date Range:"
     if params[:search]
@@ -27,6 +48,7 @@ class AdvancedReport
     else
       self.date_text += " All"
     end
+
   end
 
   def download_url(base, format, report_type = nil)

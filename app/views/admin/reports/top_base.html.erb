@@ -1,4 +1,7 @@
 <h1><%= @report_name %></h1>
+<p><%= @report.description %></p>
+<%= @report.taxon_text %>
+<%= @report.product_text %>
 
 <%= @report.ruportdata.to_html %>
 

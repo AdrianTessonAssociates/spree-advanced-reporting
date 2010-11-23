@@ -1,4 +1,8 @@
 class TopCustomers < TopReport
+  def description
+    "Top selling customers, calculated by revenue"
+  end
+
   def initialize(params, limit)
     super(params)
 
@@ -12,10 +16,14 @@ class TopCustomers < TopReport
         # check this
         rev = order.item_total
         units = order.line_items.sum(:quantity)
-        if params[:advanced_reporting] && params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
-          rev = order.line_items.select { |li| li.product.id.to_s == params[:advanced_reporting][:product_id] }.inject(0) { |a, b| a += b.quantity * b.price }
-          units = order.line_items.select { |li| li.product.id.to_s == params[:advanced_reporting][:product_id] }.inject(0) { |a, b| a += b.quantity }
+        if !self.product.nil? && product_in_taxon
+          rev = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity * b.price }
+          units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
+        elsif !self.taxon.nil?
+          rev = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
+          units = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
         end
+        rev = units = 0 if !self.product_in_taxon
         data[order.user.id][:revenue] += rev
         data[order.user.id][:units] += units
       end

@@ -1,4 +1,8 @@
 class Profit < IncrementReport
+  def description
+    "Total profit in orders, where profit is the sum of item quantity times item price minus item cost price"
+  end
+
   def initialize(params)
     super(params)
     self.total = 0
@@ -14,20 +18,18 @@ class Profit < IncrementReport
         }
       end
       profit = order.line_items.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
-      if params[:advanced_reporting] && params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
-        profit = order.line_items.select { |li| li.product.id.to_s == params[:advanced_reporting][:product_id] }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
+      if !self.product.nil? && product_in_taxon
+        profit = order.line_items.select { |li| li.product == self.product }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
+      elsif !self.taxon.nil?
+        profit = order.line_items.select { |li| li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price)*li.quantity }
       end
+      profit = 0 if !self.product_in_taxon
       INCREMENTS.each { |type| data[type][date[type]][:value] += profit }
       self.total += profit
     end
 
-    INCREMENTS.each do |type|
-      data[type].each { |k,v| ruportdata[type] << { "key" => k, "display" => v[:display], "value" => v[:value] } }
-      ruportdata[type].sort_rows_by!(["key"])
-      ruportdata[type].remove_column("key")
-      ruportdata[type].replace_column("value") { |r| "$%0.2f" % r.value }
-      ruportdata[type].rename_column("value", "Profit")
-      ruportdata[type].rename_column("display", dates[type][:header_display])
-    end
+    generate_ruport_data
+
+    INCREMENTS.each { |type| ruportdata[type].replace_column("Profit") { |r| "$%0.2f" % r["Profit"] } }
   end
 end

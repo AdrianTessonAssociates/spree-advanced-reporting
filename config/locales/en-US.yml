@@ -3,6 +3,7 @@ en:
   top_products: "Top Products"
   top_customers: "Top Customers"
   geo_revenue: "Geo Revenue"
+  geo_units: "Geo Units"
   units: "Units"
   submit: "Submit"
   profit: "Profit"
