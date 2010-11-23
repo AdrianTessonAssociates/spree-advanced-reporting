@@ -20,7 +20,7 @@ class AdvancedReport
       if params[:advanced_reporting][:taxon_id] != ''
         self.taxon = Taxon.find(params[:advanced_reporting][:taxon_id])
       end
-      if params[:advanced_reporting][:product_id] != ''
+      if params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != ''
         self.product = Product.find(params[:advanced_reporting][:product_id])
       end  
     end
