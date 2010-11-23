@@ -1,6 +1,7 @@
 h1 { margin: 0px; }
 div#sidebar { padding-top: 5px; }
 div#sidebar select { width: 200px; }
+div.canvas { padding-bottom: 20px; }
 
 table.show_data td.selected { background: #999; }
 table.show_data td:hover { cursor: pointer; }
