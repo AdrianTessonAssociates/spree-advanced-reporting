@@ -3,7 +3,7 @@ module AdvancedReporting::ReportsController
     target.class_eval do
       alias :spree_index :index
       def index; advanced_reporting_index; end
-      before_filter :basic_report_setup, :actions => [:profit, :revenue, :units, :top_products, :top_customers, :geo_revenue, :geo_units]
+      before_filter :basic_report_setup, :actions => [:profit, :revenue, :units, :top_products, :top_customers, :geo_revenue, :geo_units, :count]
     end 
   end
 
@@ -11,6 +11,7 @@ module AdvancedReporting::ReportsController
       :revenue		=> { :name => "Revenue", :description => "Revenue" },
       :units		=> { :name => "Units", :description => "Units" },
       :profit		=> { :name => "Profit", :description => "Profit" },
+      :count		=> { :name => "Order Count", :description => "Order Count" },
       :top_products	=> { :name => "Top Products", :description => "Top Products" },
       :top_customers	=> { :name => "Top Customers", :description => "Top Customers" },
       :geo_revenue	=> { :name => "Geo Revenue", :description => "Geo Revenue" },
@@ -29,7 +30,21 @@ module AdvancedReporting::ReportsController
     if defined?(MultiDomainExtension)
       @stores = Store.all
     end
-    @report_name = params[:action].gsub(/_/, ' ').split(' ').each { |w| w.capitalize! }.join(' ')
+  end
+
+  def geo_report_render(filename)
+    params[:advanced_reporting] ||= {}
+    params[:advanced_reporting]["report_type"] = params[:advanced_reporting]["report_type"].to_sym if params[:advanced_reporting]["report_type"]
+    params[:advanced_reporting]["report_type"] ||= :state
+    respond_to do |format|
+      format.html { render :template => "admin/reports/geo_base" }
+      format.pdf do
+        send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_pdf, :type =>"application/pdf", :filename => "#{filename}.pdf"
+      end
+      format.csv do
+        send_data @report.ruportdata[params[:advanced_reporting]['report_type']].to_csv, :type =>"application/csv", :filename => "#{filename}.csv"
+      end
+    end
   end
 
   def base_report_top_render(filename)
@@ -89,6 +104,11 @@ module AdvancedReporting::ReportsController
     base_report_render("profit")
   end
 
+  def count
+    @report = AdvancedReport::IncrementReport::Count.new(params)
+    base_report_render("profit")
+  end
+
   def top_products
     @report = AdvancedReport::TopReport::TopProducts.new(params, 4)
     base_report_top_render("top_products")
@@ -101,14 +121,16 @@ module AdvancedReporting::ReportsController
 
   def geo_revenue
     @report = AdvancedReport::GeoReport::GeoRevenue.new(params)
-    render :template => "admin/reports/geo_base"
+    geo_report_render("geo_revenue")
   end
+
   def geo_units
     @report = AdvancedReport::GeoReport::GeoUnits.new(params)
-    render :template => "admin/reports/geo_base"
+    geo_report_render("geo_units")
   end
+
   def geo_profit
     @report = AdvancedReport::GeoReport::GeoProfit.new(params)
-    render :template => "admin/reports/geo_base"
+    geo_report_render("geo_profit")
   end
 end

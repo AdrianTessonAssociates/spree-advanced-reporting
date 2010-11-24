@@ -1,0 +1,2 @@
+module AdvancedReportOverviewHelper
+end

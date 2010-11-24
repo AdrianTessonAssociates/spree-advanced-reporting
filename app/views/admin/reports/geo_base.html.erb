@@ -1,19 +1,3 @@
-<% content_for :sidebar do -%>
-  <%= render :partial => 'admin/reports/advanced_report_criteria', :locals => {} %>
-<% end -%>
-
-<h1><%= @report_name %></h1>
-<p><%= @report.description %></p>
-<%= @report.taxon_text %>
-<%= @report.product_text %>
-
-<table width="100%" cellpadding="0" cellspacing="0" class="show_data">
-  <tr>
-    <td width="50%" class="selected" id="state">States</td>
-    <td width="50%" id="country">Countries</td>
-  </tr>
-</table>
-
 <% [:state, :country].each do |type| -%>
 <div id="<%= type.to_s %>_data" <%= 'style="display:none;"' if type != :state %> class="advanced_reporting_data">
   <div id="<%= type.to_s %>_canvas" class="canvas"></div>
@@ -21,8 +5,35 @@
 </div>
 <% end -%>
 
+<% content_for :sidebar do -%>
+<div class="report_details">
+  <h1><%= @report.name %></h1>
+  <p><%= @report.description %></p>
+  <%= @report.taxon_text %>
+  <%= @report.product_text %>
+</div>
+
+<ul id="show_data">
+  <li class="selected" id="state">
+    <label>States</label><br />
+    <a href="<%= @report.download_url(request.request_uri, 'pdf', "state") %>">PDF</a> |
+    <a href="<%= @report.download_url(request.request_uri, 'csv', "state") %>">CSV</a>
+  </li>
+  <li id="country">
+    <label>Countries</label><br />
+    <a href="<%= @report.download_url(request.request_uri, 'pdf', "country") %>">PDF</a> |
+    <a href="<%= @report.download_url(request.request_uri, 'csv', "country") %>">CSV</a>
+  </li>
+</ul>
+<%= render :partial => 'admin/reports/advanced_report_criteria', :locals => {} %>
+<% end -%>
+
 <% content_for :head do -%>
-<script type='text/javascript'>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load('visualization', '1', {'packages': ['geomap']});        
+</script>
+<script type="text/javascript">
     google.setOnLoadCallback(drawMaps);
 
     function drawMaps() {
@@ -30,10 +41,10 @@
     	var data_<%= type.to_s %> = new google.visualization.DataTable();
     	data_<%= type.to_s %>.addRows(<%= @report.ruportdata[type].size %>);
     	data_<%= type.to_s %>.addColumn('string', '<%= type.to_s.capitalize %>');
-    	data_<%= type.to_s %>.addColumn('number', '<%= @report_name.gsub('Geo ', '') %>');
+    	data_<%= type.to_s %>.addColumn('number', '<%= @report.column %>');
     	<% @report.ruportdata[type].each_with_index do |p, i| %>
     	data_<%= type.to_s %>.setValue(<%= i.to_s %>, 0, "<%= p.data[type.to_s.capitalize] %>");
-    	data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data[@report_name.gsub("Geo ", '')].to_s.gsub(/^\$/, '') %>);
+    	data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data[@report.column].to_s.gsub(/^\$/, '') %>);
     	<% end -%>
 
     	var options_<%= type.to_s %> = { 'width' : '800px', 'height' : '500px' };

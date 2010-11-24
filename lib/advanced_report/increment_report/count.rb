@@ -1,14 +1,14 @@
-class AdvancedReport::IncrementReport::Units < AdvancedReport::IncrementReport
+class AdvancedReport::IncrementReport::Count < AdvancedReport::IncrementReport
   def name
-    "Units Sold"
+    "Order Count"
   end
 
   def column
-    "Units"
+    "Count"
   end
 
   def description
-    "Total units sold in orders, a sum of the item quantities per order or per item"
+    "Total number of completed orders"
   end
 
   def initialize(params)
@@ -25,9 +25,9 @@ class AdvancedReport::IncrementReport::Units < AdvancedReport::IncrementReport
              Time.parse(order.completed_at.strftime(dates[type][:timestamp])).to_i
         }
       end
-      units = units(order)
-      INCREMENTS.each { |type| data[type][date[type]][:value] += units }
-      self.total += units
+      order_count = order_count(order)
+      INCREMENTS.each { |type| data[type][date[type]][:value] += order_count }
+      self.total += order_count
     end
 
     generate_ruport_data

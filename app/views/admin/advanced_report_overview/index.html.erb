@@ -1,0 +1,116 @@
+<table width="100%">
+  <tr>
+    <td colspan="3">
+      <% @report.increments.each do |type| -%>
+      <div id="<%= type.to_s %>_data" <%= 'style="display:none;"' if type.to_s != 'daily' %> class="advanced_reporting_data">
+        <h3><%= type.to_s.capitalize + ' ' + @report.name %></h3>
+        <div id="<%= type.to_s %>_chart_revenue"></div>
+      </div>
+      <% end -%>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%">
+      <h3>Top Products by Revenue</h3>
+      <div id="top_products_chart"></div>
+      <h3>Top Taxons by Quantity</h3>
+      <div id="top_taxons_chart"></div>
+    </td>
+    <td width="33%">
+      <h3>Top Customers by Revenue</h3>
+      <div id="top_customers">
+      <%= @top_customers_report.ruportdata.to_html %>
+      </div>
+    </td>
+    <td width="33%">
+      <h3>Last 10 Orders</h3>
+      <div id="recent_orders">
+      <table class="tablesorter">
+        <thead><tr>
+	  <th>Order</th>
+	  <th>Items</th>
+	  <th>Total</th>
+        </tr></thead>
+        <% @last_orders.each do |order| %>
+        <tr class="odd">
+	  <td><%= order[0] %></td>
+	  <td><%= order[1] %></td>
+          <td><%= number_to_currency order[2] %></td>
+        </tr>
+        <% end -%>
+      </table>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<% content_for :sidebar do %>
+<div class="report_details">
+<h1>Dashboard</h1>
+<p>Welcome to the Advanced Reporting dashboard!</p>
+</div>
+
+<ul id="show_data">
+    <% @report.increments.each do |inc| %>
+    <li <%= 'class="selected"' if inc == :daily %> id="<%= inc.to_s %>">
+      <label><%= inc.to_s.capitalize %></label><br />
+      <a href="<%= @report.download_url('/admin/reports/revenue', 'pdf', inc.to_s) %>">PDF</a> |
+      <a href="<%= @report.download_url('/admin/reports/revenue', 'csv', inc.to_s) %>">CSV</a>
+    </li>
+    <% end -%>
+</ul>
+<%= render :partial => 'admin/reports/advanced_report_criteria', :locals => {} %>
+<% end %>
+
+<% content_for :head do -%>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load('visualization', '1', {'packages': ['corechart']});	
+</script>
+<script type="text/javascript">
+google.setOnLoadCallback(drawChart);
+      
+function drawChart() {
+	<% @report.increments.each do |type| -%>
+        var data_<%= type.to_s %> = new google.visualization.DataTable();
+        data_<%= type.to_s %>.addColumn('string', 'Display');
+        data_<%= type.to_s %>.addColumn('number', '<%= @report.name %>');
+        data_<%= type.to_s %>.addRows(<%= @report.ruportdata[type].size %>);
+	<% @report.ruportdata[type].each_with_index do |p, i| %>
+        data_<%= type.to_s %>.setValue(<%= i.to_s %>, 0, "<%= p.data[type.to_s.capitalize] %>");
+        data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data[@report.column].to_s.gsub(/^\$/, '') %>);
+        <% end -%>
+        var chart_<%= type.to_s %> = new google.visualization.ColumnChart(document.getElementById('<%= type.to_s %>_chart_revenue'));
+        chart_<%= type.to_s %>.draw(data_<%= type.to_s %>, {
+		width: 800,
+		height: 400,
+		legend : 'none',
+		title: '' });
+        <% end -%> 
+
+        var product_data = new google.visualization.DataTable();
+        product_data.addColumn('string', 'Product');
+        product_data.addColumn('number', 'Revenue');
+        product_data.addRows(<%= @top_products_report.ruportdata.size %>);
+	<% @top_products_report.ruportdata.each_with_index do |p, i| %>
+        product_data.setValue(<%= i.to_s %>, 0, "<%= p.data["Product Name"].gsub('"', '\"') %>");
+        product_data.setValue(<%= i.to_s %>, 1, <%= p.data["Revenue"].to_s.gsub(/^\$/, '') %>);
+        <% end -%>
+
+        var chart = new google.visualization.PieChart(document.getElementById('top_products_chart'));
+        chart.draw(product_data, {width: "100%", height: 300, title: ''});
+
+        var taxon_data = new google.visualization.DataTable();
+        taxon_data.addColumn('string', 'Taxon');
+        taxon_data.addColumn('number', 'Orders');
+        taxon_data.addRows(<%= @best_taxons.size %>);
+	<% @best_taxons.each_with_index do |p, i| %>
+        taxon_data.setValue(<%= i.to_s %>, 0, "<%= p[0] %>");
+        taxon_data.setValue(<%= i.to_s %>, 1, <%= p[1] %>);
+        <% end -%>
+
+        var taxon_chart = new google.visualization.PieChart(document.getElementById('top_taxons_chart'));
+        taxon_chart.draw(taxon_data, {width: "100%", height: 300, title: ''});
+}
+</script>
+<% end -%>

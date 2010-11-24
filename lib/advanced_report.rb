@@ -1,6 +1,10 @@
 class AdvancedReport
   attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :data, :params, :taxon, :product, :product_in_taxon
 
+  def name
+    "Base Advanced Report"
+  end
+
   def description
     "Base Advanced Report"
   end
@@ -72,8 +76,7 @@ class AdvancedReport
     elsif !self.taxon.nil?
       rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
     end
-    rev = 0 if !self.product_in_taxon
-    rev
+    self.product_in_taxon ? rev : 0
   end
 
   def profit(order)
@@ -83,8 +86,7 @@ class AdvancedReport
     elsif !self.taxon.nil?
       profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
     end
-    profit = 0 if !self.product_in_taxon
-    profit
+    self.product_in_taxon ? profit : 0
   end
 
   def units(order)
@@ -94,7 +96,10 @@ class AdvancedReport
     elsif !self.taxon.nil?
       units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
     end
-    units = 0 if !self.product_in_taxon
-    units
+    self.product_in_taxon ? units : 0
+  end
+
+  def order_count(order)
+    self.product_in_taxon ? 1 : 0
   end
 end

@@ -1,6 +1,3 @@
 # Add UI for limiting products / store on frontend
 # Add localization
-
-# Maybe?
-# Override dashboard?
 # Add SVG formatting? or another plotting tool?

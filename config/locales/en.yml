@@ -2,6 +2,7 @@ en:
   revenue: "Revenue"
   units: "Units"
   profit: "Profit"
+  order_count: "Order Count"
   top_products: "Top Products"
   top_customers: "Top Customers"
   submit: "Submit"

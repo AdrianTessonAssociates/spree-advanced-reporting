@@ -1,8 +1,18 @@
+#content.with-sidebar { padding-left: 250px; background: #FFF; padding-right: 20px; min-height: 650px; }
 h1 { margin: 0px; }
-div#sidebar { padding-top: 5px; }
-div#sidebar select { width: 200px; }
-div.canvas { padding-bottom: 20px; }
 
+div#sidebar { padding-top: 5px; left: 0px; width: 220px; }
+div#sidebar select { width: 200px; }
+div.report_details { padding-left: 10px; }
+
+ul#show_data { list-style-type: none; margin: 0px; padding: 10px 0px 20px 0px; }
+ul#show_data li { padding-left:10px; height: 37px; padding-top: 3px; }
+ul#show_data li:hover { cursor: pointer; }
+ul#show_data li.selected { background: url(/images/advanced_reporting/menu-current-opposite.png); margin-right: -20px; }
+div#advanced_report_search { padding-left: 10px; }
+select#report { margin-left: 10px; }
+
+div.canvas { padding-bottom: 20px; }
 table.show_data td.selected { background: #999; }
 table.show_data td:hover { cursor: pointer; }
 
@@ -10,4 +20,5 @@ th.header { background-image: url(/images/advanced_reporting/bg.gif); cursor: po
 th.headerSortUp { background-image: url(/images/advanced_reporting/asc.gif); background-color: #3399FF; }
 th.headerSortDown { background-image: url(/images/advanced_reporting/desc.gif); background-color: #3399FF; }
 
-table.tablesorter { z-index: 2; }
+ul#show_data a, #content div.links a { color: #000; font-size: 11px; font-weight: bold; }
+ul#show_data a:visited, #content div.links a:visited { font-weight: normal; color: #000; }

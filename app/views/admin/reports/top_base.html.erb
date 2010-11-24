@@ -1,10 +1,12 @@
-<h1><%= @report_name %></h1>
-<p><%= @report.description %></p>
-<%= @report.taxon_text %>
-<%= @report.product_text %>
-
 <%= @report.ruportdata.to_html %>
 
 <% content_for :sidebar do %>
+  <div class="report_details">
+    <h1><%= @report.name %></h1>
+    <p><%= @report.description %></p>
+    <%= @report.taxon_text %>
+    <%= @report.product_text %>
+  </div>
+
   <%= render :partial => 'admin/reports/advanced_report_criteria', :locals => {} %>
 <% end %>

@@ -1,4 +1,12 @@
 class AdvancedReport::IncrementReport::Profit < AdvancedReport::IncrementReport
+  def name
+    "Profit"
+  end
+
+  def column
+    "Profit"
+  end
+
   def description
     "Total profit in orders, where profit is the sum of item quantity times item price minus item cost price"
   end
@@ -25,5 +33,9 @@ class AdvancedReport::IncrementReport::Profit < AdvancedReport::IncrementReport
     generate_ruport_data
 
     INCREMENTS.each { |type| ruportdata[type].replace_column("Profit") { |r| "$%0.2f" % r["Profit"] } }
+  end
+
+  def format_total
+    '$' + ((self.total*100).round.to_f / 100).to_s
   end
 end

@@ -1,4 +1,12 @@
 class AdvancedReport::IncrementReport::Revenue < AdvancedReport::IncrementReport
+  def name
+    "Revenue"
+  end
+
+  def column
+    "Revenue"
+  end
+
   def description
     "Total order revenue, where revenue is the sum of order item prices, excluding shipping and tax"
   end
@@ -32,5 +40,9 @@ class AdvancedReport::IncrementReport::Revenue < AdvancedReport::IncrementReport
     generate_ruport_data
 
     INCREMENTS.each { |type| ruportdata[type].replace_column("Revenue") { |r| "$%0.2f" % r["Revenue"] } }
+  end
+
+  def format_total
+    '$' + ((self.total*100).round.to_f / 100).to_s
   end
 end

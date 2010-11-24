@@ -1,4 +1,8 @@
 class AdvancedReport::TopReport::TopProducts < AdvancedReport::TopReport
+  def name
+    "Top Selling Products by Revenue"
+  end
+
   def description
     "Top selling products, calculated by revenue"
   end

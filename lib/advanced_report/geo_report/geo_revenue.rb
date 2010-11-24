@@ -1,4 +1,12 @@
 class AdvancedReport::GeoReport::GeoRevenue < AdvancedReport::GeoReport
+  def name
+    "Revenue by Geography"
+  end
+
+  def column
+    "Revenue"
+  end
+
   def description
     "Revenue divided geographically, into states and countries"
   end

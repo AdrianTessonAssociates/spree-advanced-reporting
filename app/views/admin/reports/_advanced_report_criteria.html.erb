@@ -1,62 +1,43 @@
-<table cellpadding="0" cellspacing="0">
-  <tr>
-    <td width="48"><img src="/images/advanced_reporting/search.png" /></td>
-    <td valign="middle" style="font-size:15px;font-weight:bold;">Your Search</td>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <div id="advanced_report_search">
-        <% form_for :search do |s| %>
-          <label><%= t("date_range") %></label><br />
-          <div class="yui-g date-range-filter">
-          <div class="yui-u sub-field first">
-            <%= s.unobtrusive_date_text_picker :created_at_after %><br />
-            <label class="sub"><%= t("start") %></label>
-          </div>
-          <div class="yui-u sub-field">
-            <%= s.unobtrusive_date_text_picker :created_at_before %><br />
-            <label><%= t("stop") %></label>
-          </div>
-          </div>
+<h3>Advanced Reports</h3>
+<select id="report">
+<% @reports.each do |key, value| %>
+  <option <%= request.request_uri == "/admin/reports/#{key}" ? 'selected="selected" ' : '' %> value="<%= send("#{key}_admin_reports_url".to_sym) %>"><%= t(value[:name].downcase.gsub(" ","_")) %></option>
+<% end %>
+</select>
+<div id="advanced_report_search">
+  <% form_for :search do |s| %>
+    <% if @stores -%>
+      Store:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br />
+    <% end -%>
 
-          <% if @stores -%>
-            Store:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br />
-          <% end -%>
+    <div id="taxon_products">
+    <% if @taxons -%>
+      Taxon: <br /><%= collection_select(:advanced_reporting, :taxon_id, @taxons, :id, :name, { :include_blank => 'All' } ) %><br />
+    <% end -%>
+      Product:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
+    </div>
 
-          <% if params[:action] != 'top_products' %>
-          <% if @taxons -%>
-            Taxon: <br /><%= collection_select(:advanced_reporting, :taxon_id, @taxons, :id, :name, { :include_blank => 'All' } ) %><br />
-          <% end -%>
-            Product:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
-          <% end -%>
-          <p><%= button t("submit") %></p>
-        <% end -%>
+    <%= t("date_range") %><br />
+    <div class="yui-g date-range-filter">
+      <div class="yui-u sub-field first">
+        <%= s.unobtrusive_date_text_picker :created_at_after %><br />
+        <label class="sub"><%= t("start") %></label>
       </div>
-    </td>
-  </tr>
-  <tr>
-    <td><img src="/images/advanced_reporting/barchart.png" /></td>
-    <td valign="middle" style="font-size:15px;font-weight:bold;">Other Reports</td>
-  </tr>
-  <tr>
-    <td colspan="2"> 
-      <% @reports.each do |key, value| %>
-        <%= link_to t(value[:name].downcase.gsub(" ","_")), send("#{key}_admin_reports_url".to_sym) %><br />
-      <% end %>
-    </td>
-  </tr>
-</table>
+      <div class="yui-u sub-field">
+        <%= s.unobtrusive_date_text_picker :created_at_before %><br />
+        <label><%= t("stop") %></label>
+      </div>
+    </div>
+
+    <p><%= button t("submit") %></p>
+  <% end -%>
+</div>
 
 <% content_for :head do -%>
 <%= javascript_include_tag 'jquery.tablesorter.min.js', 'advanced_reporting.js' %>
 <%= stylesheet_link_tag 'advanced_reporting' %>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-    google.load('visualization', '1', {'packages': ['corechart']});	
-    google.load('visualization', '1', {'packages': ['geomap']});	
-</script>
 <% end -%>
-          
+    
 <% if params[:advanced_reporting] -%>
   <% if params[:advanced_reporting][:product_id] && params[:advanced_reporting][:product_id] != '' -%>
   <input type="hidden" id="product_id" value="<%= params[:advanced_reporting][:product_id] %>" />

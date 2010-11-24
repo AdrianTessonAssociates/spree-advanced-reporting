@@ -1,4 +1,12 @@
 class AdvancedReport::GeoReport::GeoUnits < AdvancedReport::GeoReport
+  def name
+    "Units Sold by Geography"
+  end
+
+  def column
+    "Units"
+  end
+
   def description
     "Unit sales divided geographically, into states and countries"
   end

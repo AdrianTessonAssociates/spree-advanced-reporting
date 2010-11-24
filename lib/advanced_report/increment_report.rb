@@ -64,4 +64,8 @@ class AdvancedReport::IncrementReport < AdvancedReport
     d -= 1 while Date::DAYNAMES[d.wday] != 'Sunday'
     d.to_time.to_i
   end
+
+  def format_total
+    self.total 
+  end
 end

@@ -1,6 +1,10 @@
 class AdvancedReport::TopReport::TopCustomers < AdvancedReport::TopReport
+  def name
+    "Top Customers"
+  end
+
   def description
-    "Top selling customers, calculated by revenue"
+    "Top purchasing customers, calculated by revenue"
   end
 
   def initialize(params, limit)
