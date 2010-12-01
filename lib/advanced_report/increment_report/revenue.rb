@@ -43,6 +43,6 @@ class AdvancedReport::IncrementReport::Revenue < AdvancedReport::IncrementReport
   end
 
   def format_total
-    '$' + ((self.total*100).round.to_f / 100).to_s
+    I18n.t(:'number.format') + ((self.total*100).round.to_f / 100).to_s
   end
 end
